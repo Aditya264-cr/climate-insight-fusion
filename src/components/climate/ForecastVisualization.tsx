@@ -105,11 +105,11 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
           data: [baseline, Math.abs(growth)],
           backgroundColor: [
             'hsl(var(--secondary))',
-            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--success))'
+            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'
           ],
           borderColor: [
             'hsl(var(--secondary))',
-            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--success))'
+            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'
           ],
           borderWidth: 2,
         }

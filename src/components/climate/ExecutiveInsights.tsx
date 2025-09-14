@@ -97,11 +97,11 @@ const ExecutiveInsights: React.FC<ExecutiveInsightsProps> = ({ insights, isLoadi
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${
                 riskLevel === 'high' ? 'bg-destructive/10' : 
-                riskLevel === 'medium' ? 'bg-warning/10' : 'bg-success/10'
+                riskLevel === 'medium' ? 'bg-primary/10' : 'bg-secondary/10'
               }`}>
                 <AlertTriangle className={`h-5 w-5 ${
                   riskLevel === 'high' ? 'text-destructive' : 
-                  riskLevel === 'medium' ? 'text-warning' : 'text-success'
+                  riskLevel === 'medium' ? 'text-primary' : 'text-secondary'
                 }`} />
               </div>
               <div>
@@ -123,8 +123,8 @@ const ExecutiveInsights: React.FC<ExecutiveInsightsProps> = ({ insights, isLoadi
         <Card className="data-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-success/10">
-                <CheckCircle className="h-5 w-5 text-success" />
+              <div className="p-2 rounded-lg bg-secondary/10">
+                <CheckCircle className="h-5 w-5 text-secondary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Data Quality</p>
