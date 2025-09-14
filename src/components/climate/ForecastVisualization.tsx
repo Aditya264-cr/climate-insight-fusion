@@ -45,6 +45,26 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
   indicator, 
   region 
 }) => {
+  const getIndicatorLabel = (indicator: string) => {
+    const labels = {
+      co2: 'CO₂ Emissions (ppm)',
+      avg_temperature: 'Temperature (°C)',
+      gdp: 'GDP ($)',
+      renewable_adoption: 'Renewable Energy (%)'
+    };
+    return labels[indicator as keyof typeof labels] || indicator;
+  };
+
+  const getIndicatorIcon = (indicator: string) => {
+    const icons = {
+      co2: '🌡️',
+      avg_temperature: '🌡️',
+      gdp: '💰',
+      renewable_adoption: '⚡'
+    };
+    return icons[indicator as keyof typeof icons] || '📊';
+  };
+
   const chartData = useMemo(() => {
     if (!data?.forecast) return null;
 
@@ -145,26 +165,6 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
       ]
     };
   }, [data, indicator]);
-
-  const getIndicatorLabel = (indicator: string) => {
-    const labels = {
-      co2: 'CO₂ Emissions (ppm)',
-      avg_temperature: 'Temperature (°C)',
-      gdp: 'GDP ($)',
-      renewable_adoption: 'Renewable Energy (%)'
-    };
-    return labels[indicator as keyof typeof labels] || indicator;
-  };
-
-  const getIndicatorIcon = (indicator: string) => {
-    const icons = {
-      co2: '🌡️',
-      avg_temperature: '🌡️',
-      gdp: '💰',
-      renewable_adoption: '⚡'
-    };
-    return icons[indicator as keyof typeof icons] || '📊';
-  };
 
   const chartOptions = {
     responsive: true,
