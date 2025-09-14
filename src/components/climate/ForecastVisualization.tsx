@@ -83,29 +83,35 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           label: getIndicatorLabel(indicator),
           data: values,
-          borderColor: 'hsl(var(--primary))',
-          backgroundColor: 'hsl(var(--primary) / 0.1)',
-          borderWidth: 2,
+          borderColor: 'hsl(217 91% 60%)', // Blue gradient main line
+          backgroundColor: 'hsl(217 91% 60% / 0.1)',
+          borderWidth: 3,
           fill: true,
           tension: 0.4,
+          pointBackgroundColor: 'hsl(217 91% 60%)',
+          pointBorderColor: 'hsl(217 91% 90%)',
+          pointBorderWidth: 2,
+          pointRadius: 4,
         },
         {
           label: 'Confidence Range',
           data: confidenceHigh,
-          borderColor: 'hsl(var(--primary) / 0.3)',
-          backgroundColor: 'hsl(var(--primary) / 0.05)',
-          borderWidth: 1,
-          borderDash: [5, 5],
+          borderColor: 'hsl(142 76% 36%)', // Green confidence high
+          backgroundColor: 'hsl(142 76% 36% / 0.08)',
+          borderWidth: 2,
+          borderDash: [8, 4],
           fill: '+1',
+          pointRadius: 0,
         },
         {
           label: 'Lower Bound',
           data: confidenceLow,
-          borderColor: 'hsl(var(--primary) / 0.3)',
-          backgroundColor: 'hsl(var(--primary) / 0.05)',
-          borderWidth: 1,
-          borderDash: [5, 5],
+          borderColor: 'hsl(346 87% 43%)', // Red confidence low
+          backgroundColor: 'hsl(346 87% 43% / 0.08)',
+          borderWidth: 2,
+          borderDash: [8, 4],
           fill: false,
+          pointRadius: 0,
         }
       ]
     };
@@ -124,14 +130,19 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           data: [baseline, Math.abs(growth)],
           backgroundColor: [
-            'hsl(var(--secondary))',
-            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'
+            'hsl(262 83% 58%)', // Purple for baseline
+            growth > 0 ? 'hsl(25 95% 53%)' : 'hsl(173 58% 39%)' // Orange for positive, Teal for negative
           ],
           borderColor: [
-            'hsl(var(--secondary))',
-            growth > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'
+            'hsl(262 83% 48%)', // Darker purple border
+            growth > 0 ? 'hsl(25 95% 43%)' : 'hsl(173 58% 29%)' // Darker borders
           ],
-          borderWidth: 2,
+          borderWidth: 3,
+          hoverBackgroundColor: [
+            'hsl(262 83% 68%)',
+            growth > 0 ? 'hsl(25 95% 63%)' : 'hsl(173 58% 49%)'
+          ],
+          hoverBorderWidth: 4,
         }
       ]
     };
@@ -158,9 +169,18 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           label: `Annual Average ${getIndicatorLabel(indicator)}`,
           data: averages,
-          backgroundColor: 'hsl(var(--primary) / 0.8)',
-          borderColor: 'hsl(var(--primary))',
-          borderWidth: 1,
+          backgroundColor: averages.map((_, index) => 
+            `hsl(${280 + (index * 15) % 60} 70% 60% / 0.8)` // Gradient from purple to pink
+          ),
+          borderColor: averages.map((_, index) => 
+            `hsl(${280 + (index * 15) % 60} 70% 50%)`
+          ),
+          borderWidth: 2,
+          hoverBackgroundColor: averages.map((_, index) => 
+            `hsl(${280 + (index * 15) % 60} 70% 70% / 0.9)`
+          ),
+          borderRadius: 4,
+          borderSkipped: false,
         }
       ]
     };
@@ -172,6 +192,10 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20
+        }
       },
       title: {
         display: true,
@@ -180,11 +204,22 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
       tooltip: {
         mode: 'index' as const,
         intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: 'hsl(217 91% 60%)',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 12
       }
     },
     scales: {
       x: {
         display: true,
+        grid: {
+          color: 'hsl(0 0% 90%)',
+          lineWidth: 1
+        },
         title: {
           display: true,
           text: 'Time Period'
@@ -192,6 +227,10 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
       },
       y: {
         display: true,
+        grid: {
+          color: 'hsl(0 0% 95%)',
+          lineWidth: 1
+        },
         title: {
           display: true,
           text: getIndicatorLabel(indicator)
@@ -202,6 +241,11 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
       mode: 'nearest' as const,
       axis: 'x' as const,
       intersect: false,
+    },
+    elements: {
+      point: {
+        hoverRadius: 8
+      }
     }
   };
 
