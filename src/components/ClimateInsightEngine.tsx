@@ -5,6 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { realTimeService, type DataUpdate } from '@/services/realTimeService';
+import { errorService, ErrorSeverity, ErrorCategory } from '@/services/errorService';
+import { vectorSearchService } from '@/services/vectorSearchService';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -75,38 +78,84 @@ const ClimateInsightEngine: React.FC = () => {
   const [forecastData, setForecastData] = useState<ForecastData | null>(null);
   const [executiveInsights, setExecutiveInsights] = useState<string>('');
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
+  const [realTimeUpdates, setRealTimeUpdates] = useState<DataUpdate[]>([]);
 
-  // Enhanced BigQuery AI data fetching with real-time capabilities
+  // Initialize real-time data subscription
+  useEffect(() => {
+    const unsubscribe = realTimeService.subscribe(
+      climateData.indicator,
+      climateData.region,
+      (update: DataUpdate) => {
+        setRealTimeUpdates(prev => [update, ...prev.slice(0, 4)]);
+      }
+    );
+
+    // Request notification permissions
+    realTimeService.requestNotificationPermission();
+
+    return unsubscribe;
+  }, [climateData.indicator, climateData.region]);
+
+  // Enhanced BigQuery AI data fetching with comprehensive error handling
   const fetchClimateData = async () => {
     setIsLoading(true);
     try {
-      // Import BigQuery service dynamically
-      const { bigQueryService } = await import('../services/bigqueryService');
+      // Validate input parameters
+      const validation = errorService.validateClimateData(climateData);
+      if (!validation.isValid) {
+        throw errorService.createError(
+          'Invalid climate data parameters',
+          'INVALID_PARAMS',
+          ErrorSeverity.MEDIUM,
+          ErrorCategory.VALIDATION,
+          { component: 'ClimateInsightEngine', action: 'fetchClimateData' }
+        );
+      }
+
+      // Import services dynamically for better performance
+      const [
+        { bigQueryService },
+        { imageService },
+        { vectorSearchService }
+      ] = await Promise.all([
+        import('../services/bigqueryService'),
+        import('../services/imageService'),
+        import('../services/vectorSearchService')
+      ]);
+
+      // Parallel data fetching with error handling
+      const [forecast, insights, vectorResults] = await Promise.allSettled([
+        bigQueryService.generateForecast({
+          indicator: climateData.indicator,
+          region: climateData.region,
+          timeRange: climateData.timeRange,
+          mode: climateData.mode
+        }),
+        bigQueryService.generateExecutiveInsights({
+          forecastData: null,
+          indicator: climateData.indicator,
+          region: climateData.region
+        }),
+        vectorSearchService.findSimilarRegions(
+          climateData.region,
+          climateData.indicator,
+          climateData.timeRange
+        )
+      ]);
+
+      // Process results with fallbacks
+      if (forecast.status === 'fulfilled') {
+        setForecastData(forecast.value);
+      }
       
-      // Generate forecast using BigQuery AI or demo data
-      const forecastRequest = {
-        indicator: climateData.indicator,
-        region: climateData.region,
-        timeRange: climateData.timeRange,
-        mode: climateData.mode
-      };
+      if (insights.status === 'fulfilled') {
+        setExecutiveInsights(insights.value);
+      }
 
-      const forecast = await bigQueryService.generateForecast(forecastRequest);
-      setForecastData(forecast);
-
-      // Generate executive insights using AI
-      const insights = await bigQueryService.generateExecutiveInsights({
-        forecastData: forecast,
-        indicator: climateData.indicator,
-        region: climateData.region
-      });
-      setExecutiveInsights(insights);
-
-      // Update data sources
       setDataSources(generateDataSources(climateData.indicator));
       
     } catch (error) {
-      console.error('Error fetching climate data:', error);
+      await errorService.handleError(error);
       // Fallback to demo data
       const mockForecast: ForecastData = {
         forecast: generateMockForecast(climateData.indicator),
@@ -119,7 +168,6 @@ const ClimateInsightEngine: React.FC = () => {
       };
       setForecastData(mockForecast);
       setExecutiveInsights(generateExecutiveInsights(climateData, mockForecast));
-      setDataSources(generateDataSources(climateData.indicator));
     } finally {
       setIsLoading(false);
     }

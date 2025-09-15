@@ -1,6 +1,9 @@
 // BigQuery AI Service - Production Integration
 // This service interfaces with BigQuery AI capabilities for real data
 
+import { errorService, ErrorSeverity, ErrorCategory } from './errorService';
+import { realTimeService } from './realTimeService';
+
 export interface BigQueryConfig {
   projectId: string;
   apiKey?: string;
@@ -29,27 +32,64 @@ export interface ExecutiveInsightRequest {
 class BigQueryService {
   private config: BigQueryConfig;
   private baseUrl = 'https://bigquery.googleapis.com/bigquery/v2';
+  private authToken: string | null = null;
 
   constructor(config: BigQueryConfig) {
     this.config = config;
+    this.initializeAuth();
+  }
+
+  private async initializeAuth(): Promise<void> {
+    if (this.config.apiKey) {
+      this.authToken = this.config.apiKey;
+    }
   }
 
   async executeBigQueryAI(query: string): Promise<any> {
-    // In production, this would make actual BigQuery API calls
-    // For now, returning enhanced mock data with real-world structure
-    
-    console.log('BigQuery AI Query:', query);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    return {
-      jobComplete: true,
-      rows: [],
-      schema: {},
-      totalRows: 0,
-      errors: null
-    };
+    try {
+      // Validate query
+      const validation = errorService.validate({ query }, [
+        { field: 'query', type: 'required', message: 'BigQuery query is required' },
+        { field: 'query', type: 'string', message: 'Query must be a string', min: 10 }
+      ]);
+
+      if (!validation.isValid) {
+        throw errorService.createError(
+          `Query validation failed: ${validation.errors.map(e => e.message).join(', ')}`,
+          'QUERY_VALIDATION_ERROR',
+          ErrorSeverity.MEDIUM,
+          ErrorCategory.VALIDATION,
+          { component: 'BigQueryService', action: 'executeBigQueryAI' }
+        );
+      }
+
+      // Execute with retry mechanism
+      return await errorService.withRetry(async () => {
+        // Simulate API call for now
+        console.log('BigQuery AI Query:', query);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        return {
+          jobComplete: true,
+          rows: [],
+          schema: {},
+          totalRows: 0,
+          errors: null
+        };
+      }, `bigquery-${query.substring(0, 50)}`);
+
+    } catch (error) {
+      const appError = errorService.createError(
+        `BigQuery execution failed: ${error.message}`,
+        'BIGQUERY_EXECUTION_ERROR',
+        ErrorSeverity.HIGH,
+        ErrorCategory.API,
+        { component: 'BigQueryService', action: 'executeBigQueryAI', data: { query } }
+      );
+      
+      await errorService.handleError(appError);
+      throw appError;
+    }
   }
 
   async generateForecast(request: ForecastRequest): Promise<any> {
@@ -256,8 +296,8 @@ Risk Assessment: HIGH - Requires immediate attention and coordinated response.`;
 
 // Singleton instance
 export const bigQueryService = new BigQueryService({
-  projectId: process.env.VITE_BIGQUERY_PROJECT_ID || 'demo-project',
-  apiKey: process.env.VITE_BIGQUERY_API_KEY
+  projectId: import.meta.env.VITE_BIGQUERY_PROJECT_ID || 'demo-project',
+  apiKey: import.meta.env.VITE_BIGQUERY_API_KEY
 });
 
 export default BigQueryService;
