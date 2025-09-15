@@ -76,14 +76,38 @@ const ClimateInsightEngine: React.FC = () => {
   const [executiveInsights, setExecutiveInsights] = useState<string>('');
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
 
-  // Simulate BigQuery AI data fetching
+  // Enhanced BigQuery AI data fetching with real-time capabilities
   const fetchClimateData = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Import BigQuery service dynamically
+      const { bigQueryService } = await import('../services/bigqueryService');
       
-      // Mock forecast data based on indicator
+      // Generate forecast using BigQuery AI or demo data
+      const forecastRequest = {
+        indicator: climateData.indicator,
+        region: climateData.region,
+        timeRange: climateData.timeRange,
+        mode: climateData.mode
+      };
+
+      const forecast = await bigQueryService.generateForecast(forecastRequest);
+      setForecastData(forecast);
+
+      // Generate executive insights using AI
+      const insights = await bigQueryService.generateExecutiveInsights({
+        forecastData: forecast,
+        indicator: climateData.indicator,
+        region: climateData.region
+      });
+      setExecutiveInsights(insights);
+
+      // Update data sources
+      setDataSources(generateDataSources(climateData.indicator));
+      
+    } catch (error) {
+      console.error('Error fetching climate data:', error);
+      // Fallback to demo data
       const mockForecast: ForecastData = {
         forecast: generateMockForecast(climateData.indicator),
         summary: {
@@ -93,12 +117,9 @@ const ClimateInsightEngine: React.FC = () => {
           accuracy_score: 0.87
         }
       };
-      
       setForecastData(mockForecast);
       setExecutiveInsights(generateExecutiveInsights(climateData, mockForecast));
       setDataSources(generateDataSources(climateData.indicator));
-    } catch (error) {
-      console.error('Error fetching climate data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -234,9 +255,19 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
     fetchClimateData();
   }, [climateData.indicator, climateData.region, climateData.mode]);
 
-  const handleExportReport = () => {
-    // Simulate export functionality
-    console.log('Exporting comprehensive climate report...');
+  const handleExportReport = async () => {
+    try {
+      const { exportToPDF } = await import('../utils/pdfExport');
+      await exportToPDF({
+        filename: `climate-report-${climateData.region}-${climateData.indicator}-${new Date().toISOString().split('T')[0]}.pdf`,
+        includeCharts: true,
+        includeImages: true,
+        quality: 0.95
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
   };
 
   return (
@@ -280,29 +311,29 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 lg:w-fit lg:mx-auto">
-            <TabsTrigger value="insights" className="gap-2">
+            <TabsTrigger value="insights" className="gap-2" data-value="insights">
               <FileText className="h-4 w-4" />
               Executive Insights
             </TabsTrigger>
-            <TabsTrigger value="forecast" className="gap-2">
+            <TabsTrigger value="forecast" className="gap-2" data-value="forecast">
               <TrendingUp className="h-4 w-4" />
               Forecast
             </TabsTrigger>
-            <TabsTrigger value="analysis" className="gap-2">
+            <TabsTrigger value="analysis" className="gap-2" data-value="analysis">
               <Camera className="h-4 w-4" />
               Image Analysis
             </TabsTrigger>
-            <TabsTrigger value="search" className="gap-2">
+            <TabsTrigger value="search" className="gap-2" data-value="search">
               <Search className="h-4 w-4" />
               Vector Search
             </TabsTrigger>
-            <TabsTrigger value="sources" className="gap-2">
+            <TabsTrigger value="sources" className="gap-2" data-value="sources">
               <Database className="h-4 w-4" />
               Data Sources
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="insights">
+          <TabsContent value="insights" data-value="insights">
             <ExecutiveInsights 
               insights={executiveInsights}
               isLoading={isLoading}
@@ -310,7 +341,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
             />
           </TabsContent>
 
-          <TabsContent value="forecast">
+          <TabsContent value="forecast" data-value="forecast">
             <ForecastVisualization 
               data={forecastData}
               isLoading={isLoading}
@@ -319,7 +350,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
             />
           </TabsContent>
 
-          <TabsContent value="analysis">
+          <TabsContent value="analysis" data-value="analysis">
             <ImageAnalyzer 
               indicator={climateData.indicator}
               region={climateData.region}
@@ -327,7 +358,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
             />
           </TabsContent>
 
-          <TabsContent value="search">
+          <TabsContent value="search" data-value="search">
             <VectorSearch 
               indicator={climateData.indicator}
               region={climateData.region}
@@ -335,7 +366,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
             />
           </TabsContent>
 
-          <TabsContent value="sources">
+          <TabsContent value="sources" data-value="sources">
             <DataSources 
               sources={dataSources}
               indicator={climateData.indicator}
