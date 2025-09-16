@@ -96,6 +96,18 @@ const ClimateInsightEngine: React.FC = () => {
     return unsubscribe;
   }, [climateData.indicator, climateData.region]);
 
+  // Expose data for PDF export
+  useEffect(() => {
+    try {
+      (window as any).__climateReportData = {
+        climateData,
+        forecastData,
+        executiveInsights,
+        dataSources,
+      };
+    } catch {}
+  }, [climateData, forecastData, executiveInsights, dataSources]);
+
   // Enhanced BigQuery AI data fetching with comprehensive error handling
   const fetchClimateData = async () => {
     setIsLoading(true);

@@ -74,7 +74,16 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
     if (!data?.forecast) return null;
 
     const horizon = getTimeHorizon(timeRange);
-    const series = data.forecast.slice(-horizon);
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setFullYear(now.getFullYear() - (timeRange === '1y' ? 1 : timeRange === '5y' ? 5 : 10));
+
+    const series = data.forecast
+      .filter(item => {
+        const d = new Date(item.ts);
+        return d >= startDate && d <= now;
+      })
+      .sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 
     const labels = series.map(item => {
       const date = new Date(item.ts);
@@ -91,7 +100,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           label: getIndicatorLabel(indicator),
           data: values,
-          borderColor: 'hsl(217 91% 60%)', // Blue gradient main line
+          borderColor: 'hsl(217 91% 60%)',
           backgroundColor: 'hsl(217 91% 60% / 0.1)',
           borderWidth: 3,
           fill: true,
@@ -104,7 +113,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           label: 'Confidence Range',
           data: confidenceHigh,
-          borderColor: 'hsl(142 76% 36%)', // Green confidence high
+          borderColor: 'hsl(142 76% 36%)',
           backgroundColor: 'hsl(142 76% 36% / 0.08)',
           borderWidth: 2,
           borderDash: [8, 4],
@@ -114,7 +123,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         {
           label: 'Lower Bound',
           data: confidenceLow,
-          borderColor: 'hsl(346 87% 43%)', // Red confidence low
+          borderColor: 'hsl(346 87% 43%)',
           backgroundColor: 'hsl(346 87% 43% / 0.08)',
           borderWidth: 2,
           borderDash: [8, 4],
@@ -129,7 +138,15 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
     if (!data?.forecast) return null;
 
     const horizon = getTimeHorizon(timeRange);
-    const series = data.forecast.slice(-horizon);
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setFullYear(now.getFullYear() - (timeRange === '1y' ? 1 : timeRange === '5y' ? 5 : 10));
+    const series = data.forecast
+      .filter(item => {
+        const d = new Date(item.ts);
+        return d >= startDate && d <= now;
+      })
+      .sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
     const recent = series.slice(-12); // Last 12 months within selected range
     if (!recent.length) return null;
 
@@ -164,7 +181,15 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
     if (!data?.forecast) return null;
 
     const horizon = getTimeHorizon(timeRange);
-    const series = data.forecast.slice(-horizon);
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setFullYear(now.getFullYear() - (timeRange === '1y' ? 1 : timeRange === '5y' ? 5 : 10));
+    const series = data.forecast
+      .filter(item => {
+        const d = new Date(item.ts);
+        return d >= startDate && d <= now;
+      })
+      .sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 
     const yearlyData = series.reduce((acc, item) => {
       const year = new Date(item.ts).getFullYear();
@@ -310,7 +335,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    10-Year Projection
+                    {getTimeRangeLabel(timeRange)} (Past)
                   </div>
                   <div className="flex items-center gap-1">
                     <Activity className="h-3 w-3" />

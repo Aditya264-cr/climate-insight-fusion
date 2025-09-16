@@ -187,15 +187,16 @@ class BigQueryService {
   private generateDemoForecast(request: ForecastRequest): any {
     const now = new Date();
     const horizon = this.getTimeHorizon(request.timeRange); // months
-    const start = new Date(now.getFullYear(), now.getMonth() + 1, 1); // start from next month
+    // Build past window ending this month (historical)
+    const end = new Date(now.getFullYear(), now.getMonth(), 1);
     const forecast = [] as Array<{ ts: string; value: number; confidence_low: number; confidence_high: number }>;
 
     const baseValue = this.getBaseValue(request.indicator);
     const trend = this.getTrendMultiplier(request.indicator);
 
     for (let i = 0; i < horizon; i++) {
-      // Advance month by i, letting Date handle year rollover
-      const date = new Date(start.getFullYear(), start.getMonth() + i, 1);
+      // Go back (horizon - 1 - i) months from end to get ascending past series
+      const date = new Date(end.getFullYear(), end.getMonth() - (horizon - 1 - i), 1);
       const val = baseValue + (i * trend) + (Math.random() - 0.5) * baseValue * 0.1;
       forecast.push({
         ts: date.toISOString(),
