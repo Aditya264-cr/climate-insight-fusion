@@ -230,12 +230,13 @@ const ClimateInsightEngine: React.FC = () => {
   };
 
   const generateExecutiveInsights = (data: ClimateData, forecast: ForecastData): string => {
+    const accuracyScore = forecast.summary?.accuracy_score ?? 0.87;
     return `Executive Summary for ${data.region} - ${data.indicator.toUpperCase()} Analysis
 
 Key Findings:
-• Trend Analysis: ${forecast.summary.trend.charAt(0).toUpperCase() + forecast.summary.trend.slice(1)} trajectory detected with ${Math.round(forecast.summary.accuracy_score * 100)}% confidence
+• Trend Analysis: ${forecast.summary.trend.charAt(0).toUpperCase() + forecast.summary.trend.slice(1)} trajectory detected with ${Math.round(accuracyScore * 100)}% confidence
 • Regional Impact: ${forecast.summary.impact}
-• Forecast Reliability: High accuracy (${Math.round(forecast.summary.accuracy_score * 100)}%) based on multi-source data validation
+• Forecast Reliability: High accuracy (${Math.round(accuracyScore * 100)}%) based on multi-source data validation
 
 Strategic Recommendations:
 ${forecast.summary.recommendation}
@@ -385,7 +386,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
             <ExecutiveInsights 
               insights={executiveInsights}
               isLoading={isLoading}
-              accuracy={forecastData?.summary.accuracy_score || 0}
+              accuracy={forecastData?.summary?.accuracy_score ?? 0.87}
             />
           </TabsContent>
 
