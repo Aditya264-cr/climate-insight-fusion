@@ -224,7 +224,8 @@ const VectorSearch: React.FC<VectorSearchProps> = ({ indicator, region, isLoadin
             />
             <Button 
               onClick={() => performVectorSearch(searchQuery)}
-              className="btn-climate gap-2"
+              variant="premium"
+              className="gap-2"
               disabled={searching}
             >
               <Search className="h-4 w-4" />

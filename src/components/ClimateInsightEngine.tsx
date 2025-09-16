@@ -15,7 +15,6 @@ import {
   Camera,
   Database,
   Search,
-  Download,
   AlertTriangle,
   Activity,
   Leaf,
@@ -26,7 +25,10 @@ import {
   ExternalLink,
   Calendar,
   MapPin,
-  Info
+  Info,
+  Brain,
+  Target,
+  Sparkles
 } from 'lucide-react';
 import { ExecutiveInsights } from './climate/ExecutiveInsights';
 import { ForecastVisualization } from './climate/ForecastVisualization';
@@ -316,47 +318,41 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
     fetchClimateData();
   }, [climateData.indicator, climateData.region, climateData.mode, climateData.timeRange]);
 
-  const handleExportReport = async () => {
-    try {
-      const { exportToPDF } = await import('../utils/pdfExport');
-      await exportToPDF({
-        filename: `climate-report-${climateData.region}-${climateData.indicator}-${new Date().toISOString().split('T')[0]}.pdf`,
-        includeCharts: true,
-        includeImages: true,
-        quality: 0.95
-      });
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Globe className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Climate–Economy Insight Engine
+        <div className="text-center space-y-6">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="relative">
+              <Brain className="h-10 w-10 text-primary" />
+              <Sparkles className="h-5 w-5 text-accent absolute -top-1 -right-1" />
+            </div>
+            <h1 className="text-5xl font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Executive Intelligence Platform
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            Kaggle BigQuery AI Competition • Generative + Vector + Multimodal Analysis
-          </p>
-          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-            <Badge variant="outline" className="gap-1">
-              <Activity className="h-3 w-3" />
-              Real-time Data
+          <div className="space-y-2">
+            <p className="text-foreground/80 text-xl font-medium max-w-4xl mx-auto">
+              Hyper-Personalized Marketing Engine & Executive Insight Dashboard
+            </p>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Transform raw data into actionable business insights with AI-powered analytics
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-6 flex-wrap">
+            <Badge variant="outline" className="gap-2 px-4 py-2 border-primary/30 hover:border-primary/60 transition-colors">
+              <Target className="h-4 w-4" />
+              Personalized Marketing
             </Badge>
-            <Badge variant="outline" className="gap-1">
-              <BarChart3 className="h-3 w-3" />
-              AI Forecasting
+            <Badge variant="outline" className="gap-2 px-4 py-2 border-secondary/30 hover:border-secondary/60 transition-colors">
+              <Brain className="h-4 w-4" />
+              Executive Insights
             </Badge>
-            <Badge variant="outline" className="gap-1">
-              <Search className="h-3 w-3" />
-              Vector Search
+            <Badge variant="outline" className="gap-2 px-4 py-2 border-accent/30 hover:border-accent/60 transition-colors">
+              <Activity className="h-4 w-4" />
+              Real-time Analytics
             </Badge>
           </div>
         </div>
@@ -370,27 +366,27 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
         />
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-fit lg:mx-auto">
-            <TabsTrigger value="insights" className="gap-2" data-value="insights">
-              <FileText className="h-4 w-4" />
-              Executive Insights
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5 lg:w-fit lg:mx-auto bg-background-secondary/50 backdrop-blur-sm border border-border/20">
+            <TabsTrigger value="insights" className="gap-2 data-[state=active]:gradient-primary data-[state=active]:text-white" data-value="insights">
+              <Brain className="h-4 w-4" />
+              Executive Intelligence
             </TabsTrigger>
-            <TabsTrigger value="forecast" className="gap-2" data-value="forecast">
+            <TabsTrigger value="forecast" className="gap-2 data-[state=active]:gradient-primary data-[state=active]:text-white" data-value="forecast">
               <TrendingUp className="h-4 w-4" />
-              Forecast
+              Predictive Analytics
             </TabsTrigger>
-            <TabsTrigger value="analysis" className="gap-2" data-value="analysis">
+            <TabsTrigger value="analysis" className="gap-2 data-[state=active]:gradient-primary data-[state=active]:text-white" data-value="analysis">
               <Camera className="h-4 w-4" />
-              Image Analysis
+              Visual Intelligence
             </TabsTrigger>
-            <TabsTrigger value="search" className="gap-2" data-value="search">
+            <TabsTrigger value="search" className="gap-2 data-[state=active]:gradient-primary data-[state=active]:text-white" data-value="search">
               <Search className="h-4 w-4" />
-              Vector Search
+              Smart Discovery
             </TabsTrigger>
-            <TabsTrigger value="sources" className="gap-2" data-value="sources">
+            <TabsTrigger value="sources" className="gap-2 data-[state=active]:gradient-primary data-[state=active]:text-white" data-value="sources">
               <Database className="h-4 w-4" />
-              Data Sources
+              Data Intelligence
             </TabsTrigger>
           </TabsList>
 
@@ -437,21 +433,6 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
           </TabsContent>
         </Tabs>
 
-        {/* Export Actions */}
-        <Card className="data-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-lg">Export Report</h3>
-                <p className="text-muted-foreground">Generate comprehensive climate-economy analysis report</p>
-              </div>
-              <Button onClick={handleExportReport} className="btn-climate gap-2">
-                <Download className="h-4 w-4" />
-                Export PDF
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

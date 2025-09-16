@@ -121,7 +121,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ data, onChange, onRefresh, 
           <Button 
             onClick={onRefresh} 
             disabled={isLoading}
-            className="btn-climate h-10"
+            variant="premium"
+            className="h-10"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             {isLoading ? 'Analyzing...' : 'Refresh Data'}

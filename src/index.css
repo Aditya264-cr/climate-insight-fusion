@@ -7,32 +7,32 @@
 
 @layer base {
   :root {
-    /* Climate-themed color palette */
-    --background: 220 15% 97%;
-    --background-secondary: 195 25% 95%;
-    --foreground: 215 25% 15%;
+    /* Modern executive color palette */
+    --background: 240 10% 98%;
+    --background-secondary: 240 15% 96%;
+    --foreground: 240 10% 8%;
 
-    /* Earth-inspired primary colors */
-    --primary: 158 64% 52%;
-    --primary-light: 158 64% 65%;
+    /* Vibrant primary - Electric blue */
+    --primary: 217 91% 60%;
+    --primary-light: 217 91% 75%;
     --primary-foreground: 0 0% 100%;
 
-    /* Ocean blue secondary */
-    --secondary: 205 87% 21%;
-    --secondary-light: 205 87% 35%;
+    /* Premium secondary - Deep purple */
+    --secondary: 264 89% 60%;
+    --secondary-light: 264 89% 75%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Climate accent colors */
-    --accent: 45 93% 47%;
-    --accent-light: 45 93% 60%;
-    --accent-foreground: 215 25% 15%;
+    /* Modern accent - Emerald green */
+    --accent: 160 84% 39%;
+    --accent-light: 160 84% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Alert colors for climate data */
-    --warning: 25 95% 53%;
+    /* Executive alert colors */
+    --warning: 35 100% 50%;
     --warning-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --success: 158 64% 52%;
+    --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
 
     /* UI colors */
@@ -51,18 +51,18 @@
     --ring: 158 64% 52%;
     --radius: 0.75rem;
 
-    /* Climate-specific gradients */
-    --gradient-earth: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(205 87% 21%) 100%);
-    --gradient-sky: linear-gradient(180deg, hsl(195 100% 85%) 0%, hsl(205 87% 21%) 100%);
-    --gradient-forest: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(123 41% 35%) 100%);
-    --gradient-ocean: linear-gradient(135deg, hsl(205 87% 21%) 0%, hsl(195 85% 35%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 97%) 0%, hsl(195 25% 95%) 100%);
+    /* Executive gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(264 89% 60%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(142 76% 36%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(35 100% 50%) 0%, hsl(25 95% 53%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(240 10% 98% / 0.8) 0%, hsl(240 15% 96% / 0.9) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(240 10% 98%) 0%, hsl(240 15% 96%) 100%);
 
-    /* Shadows and effects */
-    --shadow-sm: 0 1px 2px 0 hsl(220 13% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 13% 0% / 0.1), 0 2px 4px -2px hsl(220 13% 0% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(220 13% 0% / 0.1), 0 4px 6px -4px hsl(220 13% 0% / 0.1);
-    --shadow-glow: 0 0 0 1px hsl(158 64% 52% / 0.05), 0 1px 0 0 hsl(158 64% 52% / 0.05), 0 0 20px 0 hsl(158 64% 52% / 0.1);
+    /* Modern shadows and effects */
+    --shadow-sm: 0 1px 2px 0 hsl(240 10% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(240 10% 0% / 0.1), 0 2px 4px -2px hsl(240 10% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(240 10% 0% / 0.1), 0 4px 6px -4px hsl(240 10% 0% / 0.1);
+    --shadow-glow: 0 0 0 1px hsl(217 91% 60% / 0.1), 0 1px 0 0 hsl(217 91% 60% / 0.1), 0 0 30px 0 hsl(217 91% 60% / 0.15);
 
     /* Animations */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,21 +81,21 @@
   }
 
   .dark {
-    --background: 215 25% 8%;
-    --background-secondary: 215 25% 10%;
+    --background: 240 10% 4%;
+    --background-secondary: 240 10% 6%;
     --foreground: 0 0% 98%;
 
-    --primary: 158 64% 52%;
-    --primary-light: 158 64% 65%;
+    --primary: 217 91% 65%;
+    --primary-light: 217 91% 80%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 205 87% 35%;
-    --secondary-light: 205 87% 45%;
+    --secondary: 264 89% 65%;
+    --secondary-light: 264 89% 80%;
     --secondary-foreground: 0 0% 100%;
 
-    --accent: 45 93% 60%;
-    --accent-light: 45 93% 70%;
-    --accent-foreground: 215 25% 8%;
+    --accent: 160 84% 45%;
+    --accent-light: 160 84% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --warning: 25 95% 53%;
     --warning-foreground: 0 0% 100%;
@@ -139,20 +139,20 @@
 }
 
 @layer components {
-  .gradient-earth {
-    background: var(--gradient-earth);
+  .gradient-primary {
+    background: var(--gradient-primary);
   }
   
-  .gradient-sky {
-    background: var(--gradient-sky);
+  .gradient-success {
+    background: var(--gradient-success);
   }
   
-  .gradient-forest {
-    background: var(--gradient-forest);
+  .gradient-warning {
+    background: var(--gradient-warning);
   }
   
-  .gradient-ocean {
-    background: var(--gradient-ocean);
+  .gradient-glass {
+    background: var(--gradient-glass);
   }
   
   .card-glass {
@@ -162,16 +162,18 @@
     box-shadow: var(--shadow-lg);
   }
   
-  .btn-climate {
-    background: var(--gradient-earth);
+  .btn-executive {
+    background: var(--gradient-primary);
     color: hsl(var(--primary-foreground));
     border: none;
     transition: all var(--transition-normal);
+    font-weight: 600;
   }
   
-  .btn-climate:hover {
+  .btn-executive:hover {
     box-shadow: var(--shadow-glow);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    filter: brightness(1.1);
   }
   
   .data-card {
