@@ -302,7 +302,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
 
   useEffect(() => {
     fetchClimateData();
-  }, [climateData.indicator, climateData.region, climateData.mode]);
+  }, [climateData.indicator, climateData.region, climateData.mode, climateData.timeRange]);
 
   const handleExportReport = async () => {
     try {
@@ -396,6 +396,7 @@ Data Quality: Analysis incorporates real-time data from NASA, NOAA, World Bank, 
               isLoading={isLoading}
               indicator={climateData.indicator}
               region={climateData.region}
+              timeRange={climateData.timeRange}
             />
           </TabsContent>
 

@@ -32,18 +32,23 @@ ChartJS.register(
   Filler
 );
 
+const getTimeHorizon = (timeRange: string) => ({ '1y': 12, '5y': 60, '10y': 120 }[timeRange as '1y' | '5y' | '10y'] || 120);
+const getTimeRangeLabel = (timeRange: string) => ({ '1y': '1-Year', '5y': '5-Year', '10y': '10-Year' }[timeRange as '1y' | '5y' | '10y'] || 'Forecast');
+
 interface ForecastVisualizationProps {
   data: ForecastData | null;
   isLoading: boolean;
   indicator: string;
   region: string;
+  timeRange: '1y' | '5y' | '10y';
 }
 
 const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({ 
   data, 
   isLoading, 
   indicator, 
-  region 
+  region,
+  timeRange
 }) => {
   const getIndicatorLabel = (indicator: string) => {
     const labels = {
@@ -68,14 +73,17 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
   const chartData = useMemo(() => {
     if (!data?.forecast) return null;
 
-    const labels = data.forecast.map(item => {
+    const horizon = getTimeHorizon(timeRange);
+    const series = data.forecast.slice(-horizon);
+
+    const labels = series.map(item => {
       const date = new Date(item.ts);
       return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     });
 
-    const values = data.forecast.map(item => item.value);
-    const confidenceLow = data.forecast.map(item => item.confidence_low || item.value * 0.9);
-    const confidenceHigh = data.forecast.map(item => item.confidence_high || item.value * 1.1);
+    const values = series.map(item => item.value);
+    const confidenceLow = series.map(item => item.confidence_low ?? item.value * 0.9);
+    const confidenceHigh = series.map(item => item.confidence_high ?? item.value * 1.1);
 
     return {
       labels,
@@ -115,12 +123,16 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         }
       ]
     };
-  }, [data, indicator]);
+  }, [data, indicator, timeRange]);
 
   const pieData = useMemo(() => {
     if (!data?.forecast) return null;
 
-    const recent = data.forecast.slice(-12); // Last 12 months
+    const horizon = getTimeHorizon(timeRange);
+    const series = data.forecast.slice(-horizon);
+    const recent = series.slice(-12); // Last 12 months within selected range
+    if (!recent.length) return null;
+
     const growth = recent[recent.length - 1].value - recent[0].value;
     const baseline = recent[0].value;
 
@@ -146,14 +158,17 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         }
       ]
     };
-  }, [data]);
+  }, [data, timeRange]);
 
   const barData = useMemo(() => {
     if (!data?.forecast) return null;
 
-    const yearlyData = data.forecast.reduce((acc, item) => {
+    const horizon = getTimeHorizon(timeRange);
+    const series = data.forecast.slice(-horizon);
+
+    const yearlyData = series.reduce((acc, item) => {
       const year = new Date(item.ts).getFullYear();
-      if (!acc[year]) acc[year] = [];
+      if (!acc[year]) acc[year] = [] as number[];
       acc[year].push(item.value);
       return acc;
     }, {} as Record<number, number[]>);
@@ -184,7 +199,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         }
       ]
     };
-  }, [data, indicator]);
+  }, [data, indicator, timeRange]);
 
   const chartOptions = {
     responsive: true,
@@ -199,7 +214,7 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
       },
       title: {
         display: true,
-        text: `${getIndicatorLabel(indicator)} - 10-Year Forecast`
+        text: `${getIndicatorLabel(indicator)} - ${getTimeRangeLabel(timeRange)} Forecast`
       },
       tooltip: {
         mode: 'index' as const,
