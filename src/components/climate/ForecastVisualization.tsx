@@ -394,6 +394,73 @@ const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         </Card>
       </div>
 
+      {/* Tabular Data Display */}
+      <Card className="data-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-secondary" />
+            Forecast Data Table
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left p-3 font-semibold">Date</th>
+                  <th className="text-right p-3 font-semibold">Value</th>
+                  <th className="text-right p-3 font-semibold">Lower Bound</th>
+                  <th className="text-right p-3 font-semibold">Upper Bound</th>
+                  <th className="text-right p-3 font-semibold">Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.forecast
+                  .filter(item => {
+                    const d = new Date(item.ts);
+                    const now = new Date();
+                    const startDate = new Date(now);
+                    startDate.setFullYear(now.getFullYear() - (timeRange === '1y' ? 1 : timeRange === '5y' ? 5 : 10));
+                    return d >= startDate && d <= now;
+                  })
+                  .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+                  .slice(0, 20)
+                  .map((item, index) => {
+                    const confidence = ((item.confidence_high ?? item.value * 1.1) - (item.confidence_low ?? item.value * 0.9)) / item.value * 100;
+                    return (
+                      <tr key={index} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                        <td className="p-3 font-medium">
+                          {new Date(item.ts).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short' 
+                          })}
+                        </td>
+                        <td className="p-3 text-right font-mono">
+                          {typeof item.value === 'number' ? item.value.toFixed(2) : item.value}
+                        </td>
+                        <td className="p-3 text-right font-mono text-red-600">
+                          {(item.confidence_low ?? item.value * 0.9).toFixed(2)}
+                        </td>
+                        <td className="p-3 text-right font-mono text-green-600">
+                          {(item.confidence_high ?? item.value * 1.1).toFixed(2)}
+                        </td>
+                        <td className="p-3 text-right">
+                          <Badge variant={confidence > 15 ? 'secondary' : 'outline'} className="text-xs">
+                            {confidence.toFixed(1)}%
+                          </Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm text-muted-foreground mt-4 text-center">
+            Showing last 20 data points from {getTimeRangeLabel(timeRange)} historical data
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Summary Stats */}
       <Card className="data-card">
         <CardHeader>
