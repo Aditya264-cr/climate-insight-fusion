@@ -136,8 +136,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ data, onChange, onRefresh, 
           </Badge>
           <Badge variant="outline" className="gap-1">
             <Zap className="h-3 w-3" />
-            BigQuery AI Processing
+            {data.mode === 'bigquery' ? 'BigQuery AI Active' : 'BigQuery AI Available'}
           </Badge>
+          {data.mode === 'bigquery' && (
+            <Badge variant="outline" className="gap-1 border-green-500/30 text-green-600">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              AI Methods: ML.GENERATE_TEXT | AI.FORECAST | AI.GENERATE_TABLE
+            </Badge>
+          )}
           <div className="text-xs text-muted-foreground">
             Last updated: {new Date().toLocaleTimeString()}
           </div>
