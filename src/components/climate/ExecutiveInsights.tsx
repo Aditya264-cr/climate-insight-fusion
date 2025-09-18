@@ -91,18 +91,12 @@ const ExecutiveInsights: React.FC<ExecutiveInsightsProps> = ({ insights, isLoadi
           </CardContent>
         </Card>
 
-        {/* Risk Level */}
+        {/* Risk Level - All alerts in red */}
         <Card className="data-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${
-                riskLevel === 'high' ? 'bg-destructive/10' : 
-                riskLevel === 'medium' ? 'bg-primary/10' : 'bg-secondary/10'
-              }`}>
-                <AlertTriangle className={`h-5 w-5 ${
-                  riskLevel === 'high' ? 'text-destructive' : 
-                  riskLevel === 'medium' ? 'text-primary' : 'text-secondary'
-                }`} />
+              <div className="p-2 rounded-lg bg-red-500/10">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Risk Assessment</p>
@@ -111,8 +105,9 @@ const ExecutiveInsights: React.FC<ExecutiveInsightsProps> = ({ insights, isLoadi
             </div>
             <Badge 
               variant={riskLevel === 'high' ? 'destructive' : 'outline'} 
-              className="mt-3"
+              className={`mt-3 ${riskLevel !== 'high' ? 'border-red-500 text-red-500' : ''}`}
             >
+              <AlertTriangle className="h-3 w-3 mr-1 text-red-500" />
               {riskLevel === 'high' ? 'Immediate Action Required' : 
                riskLevel === 'medium' ? 'Monitor Closely' : 'Low Risk'}
             </Badge>
@@ -173,8 +168,11 @@ const ExecutiveInsights: React.FC<ExecutiveInsightsProps> = ({ insights, isLoadi
           <CardContent>
             <div className="space-y-3">
               {recommendations.map((rec, index) => (
-                <div key={index} className="p-4 rounded-lg bg-muted/50 border-l-4 border-secondary">
-                  <p className="text-sm leading-relaxed">{rec.trim()}</p>
+                <div key={index} className="p-4 rounded-lg bg-muted/50 border-l-4 border-red-500">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm leading-relaxed">{rec.trim()}</p>
+                  </div>
                 </div>
               ))}
             </div>
